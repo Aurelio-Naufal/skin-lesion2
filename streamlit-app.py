@@ -6,7 +6,7 @@ import cv2
 from torchvision import transforms
 import numpy as np
 import streamlit as st
-import PIL
+from PIL import Image
 
 st.set_option('deprecation.showfileUploaderEncoding',False)
 st.title("Pengklasifikasi Lesi Kulit")
