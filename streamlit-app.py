@@ -87,7 +87,7 @@ with st.spinner("Meload model ke memori..."):
     model = load_model()
 
 # Class mapping for predictions
-class_mapping = {'Chickenpox': 0, 'Cowpox': 1, 'HFMD': 2, 'Healthy': 3, 'Measles': 4, 'Monkeypox': 5, 'Actinic Keratosis': 6, 'Basal Cell Carcinoma': 7, 'Benign Keratosis Lesion': 8, 'Dermato Fibroma': 9, 'Melanoma': 10, 'Nevus Melanocytic': 11, 'Vascular Lesion': 12}
+class_mapping = {'Chickenpox': 0, 'Cowpox': 1, 'HFMD': 2, 'Healthy': 3, 'Measles': 4, 'Monkeypox': 5, 'Actinic Keratosis': 6, 'Basal Cell Carcinoma': 7, 'Benign Keratosis Lesion': 8, 'Dermato Fibroma': 9, 'Melanoma': 10, 'Melanocytic Nevi': 11, 'Vascular Skin Lesion': 12}
 
 # Image uploader
 uploaded_file = st.file_uploader("Upload Foto Lesi", type=["jpg", "jpeg", "png"])
