@@ -43,6 +43,37 @@ def load_model():
     model.eval()  # Set model to evaluation mode
     return model
 
+def preprocess_image(image_file):
+    # Convert uploaded file to an OpenCV image
+    image = np.array(PIL.Image.open(image_file))
+
+    if image is None:
+        raise ValueError("gagal meload gambar")
+
+    # If the image has an alpha channel (4 channels), remove the alpha channel
+    if image.shape[-1] == 4:
+        image = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)
+
+    # Convert the image to RGB if it's not already in that format
+    elif len(image.shape) == 2 or image.shape[-1] == 1:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    elif image.shape[-1] == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Apply the necessary transforms for your model
+    preprocess = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    # Preprocess and return the image tensor
+    image_tensor = preprocess(image)
+    image_tensor = image_tensor.unsqueeze(0)  # Add batch dimension
+
+    return image_tensor
+'''    
 def preprocess_image(uploaded_file):
     # Read the uploaded image and process it
     image = Image.open(uploaded_file)
@@ -54,7 +85,7 @@ def preprocess_image(uploaded_file):
     ])
     image_tensor = preprocess(image).unsqueeze(0)  # Add batch dimension
     return image_tensor
-
+'''
 def predict_image(model, image_tensor, class_mapping):
     with torch.no_grad():
         output = model(image_tensor)
