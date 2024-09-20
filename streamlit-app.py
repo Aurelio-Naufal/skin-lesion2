@@ -35,7 +35,7 @@ class ResNetModel(nn.Module):
 
 def load_model():
     model = ResNetModel(num_classes=13)
-    state_dict = torch.load('resnet_weights.pth', map_location=torch.device('cpu'))
+    state_dict = torch.load('resnet2_weights.pth', map_location=torch.device('cpu'))
     # Load the state dict into the model
     model.load_state_dict(state_dict) 
     # Move the model to the CPU
@@ -90,7 +90,7 @@ with st.spinner("Meload model ke memori..."):
 class_mapping = {'Chickenpox': 0, 'Cowpox': 1, 'HFMD': 2, 'Healthy': 3, 'Measles': 4, 'Monkeypox': 5, 'Actinic Keratosis': 6, 'Basal Cell Carcinoma': 7, 'Benign Keratosis Lesion': 8, 'Dermato Fibroma': 9, 'Melanoma': 10, 'Nevus Melanocytic': 11, 'Vascular': 12}
 
 # Image uploader
-uploaded_file = st.file_uploader("Upload foto lesi", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Upload Foto Lesi", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     # Preprocess the uploaded image
