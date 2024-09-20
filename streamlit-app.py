@@ -6,6 +6,11 @@ import cv2
 from torchvision import transforms
 import numpy as np
 import streamlit as st
+import PIL
+
+st.set_option('deprecation.showfileUploaderEncoding',False)
+st.title("Pengklasifikasi Lesi Kulit")
+st.text("Tolong upload gambar lesi kulit (jpg/jpeg/png)")
 
 class ResNetModel(nn.Module):
     def __init__(self, num_classes, extractor_trainable=True):
@@ -25,55 +30,61 @@ class ResNetModel(nn.Module):
         x = torch.flatten(x, 1)
         x = self.fc(x)
         return x
-    
-# model = ResNetModel(num_classes=6)
 
-# model.load_state_dict(torch.load('model_weights.pth'))
+@st.cache(allow_output_mutation=True)
 
-# model = model.to('cpu')
+def load_model():
+    model = ResNetModel(num_classes=6)
+    model = model.load_state_dict(torch.load('model_weights.pth'))
+    model.eval()  # Set model to evaluation mode
+    return model
 
-def preprocess_image(image_path):
-    image = cv2.imread(image_path)
-
-    if image is None:
-        raise ValueError(f"Failed to load image at path: {image_path}")
-
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
+def preprocess_image(uploaded_file):
+    # Read the uploaded image and process it
+    image = Image.open(uploaded_file)
     preprocess = transforms.Compose([
-        transforms.ToPILImage(),
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])
     ])
-
-    image_tensor = preprocess(image)
-    image_tensor = image_tensor.unsqueeze(0)
-
+    image_tensor = preprocess(image).unsqueeze(0)  # Add batch dimension
     return image_tensor
 
 def predict_image(model, image_tensor, class_mapping):
-    model.eval()
     with torch.no_grad():
         output = model(image_tensor)
         probabilities = F.softmax(output, dim=1)
         predicted_index = torch.argmax(probabilities, dim=1).item()
-        predicted_class = [class_name for class_name, class_index in class_mapping.items() if class_index == predicted_index][0]
+        predicted_class = list(class_mapping.keys())[predicted_index]
         return predicted_class, probabilities
 
-if __name__ == "__main__":
-    class_mapping = {'Chickenpox': 0, 'Cowpox': 1, 'HFMD': 2, 'Healthy': 3, 'Measles': 4, 'Monkeypox': 5}
+# Load the model
+with st.spinner("Meload model ke memori..."):
+    model = load_model()
 
-    model = ResNetModel(num_classes=len(class_mapping))
-    model.load_state_dict(torch.load('resnet_weights.pth'))
-    model = model.to('cpu')
+# Class mapping for predictions
+class_mapping = {'Chickenpox': 0, 'Cowpox': 1, 'HFMD': 2, 'Healthy': 3, 'Measles': 4, 'Monkeypox': 5}
 
-    image_path = './dataset/Valid/Chickenpox/CHP_06_01.jpg' # ganti jadi path ke gambar
+# Image uploader
+uploaded_file = st.file_uploader("Upload foto lesi", type=["jpg", "jpeg", "png"])
 
-    image_tensor = preprocess_image(image_path)
+if uploaded_file is not None:
+    # Preprocess the uploaded image
+    image_tensor = preprocess_image(uploaded_file)
 
+    # Predict the image class
     predicted_class, probabilities = predict_image(model, image_tensor, class_mapping)
 
-    print(f"Predicted class: {predicted_class}")
-    print(f"Class probabilities: {probabilities}")
+    # Display the results
+    st.image(uploaded_file, caption="Gambar lesi kulit", use_column_width=True)
+    st.write(f"Predicted class: {predicted_class}")
+    
+    # Display probabilities for each class
+    st.write("Probabilities:")
+    for class_name, prob in zip(class_mapping.keys(), probabilities[0]):
+        st.write(f"{class_name}: {prob.item():.4f}")
+
+else :
+    st.text("Tolong upload file foto sesuai format")
+
