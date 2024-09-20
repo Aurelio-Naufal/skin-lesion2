@@ -9,8 +9,8 @@ import streamlit as st
 import PIL
 
 st.set_option('deprecation.showfileUploaderEncoding',False)
-st.title("Pengklasifikasi Lesi Kulit")
-st.text("Tolong upload gambar lesi kulit (jpg/jpeg/png)")
+st.title("Prototype SkinScan - Deteksi Kanker Kulit dan Penyakit Kulit")
+st.text("Mohon upload gambar lesi kulit dengan format jpg/jpeg/png.")
 
 class ResNetModel(nn.Module):
     def __init__(self, num_classes, extractor_trainable=True):
@@ -34,7 +34,7 @@ class ResNetModel(nn.Module):
 @st.cache(allow_output_mutation=True)
 
 def load_model():
-    model = ResNetModel(num_classes=6)
+    model = ResNetModel(num_classes=13)
     state_dict = torch.load('resnet_weights.pth', map_location=torch.device('cpu'))
     # Load the state dict into the model
     model.load_state_dict(state_dict) 
@@ -87,7 +87,7 @@ with st.spinner("Meload model ke memori..."):
     model = load_model()
 
 # Class mapping for predictions
-class_mapping = {'Chickenpox': 0, 'Cowpox': 1, 'HFMD': 2, 'Healthy': 3, 'Measles': 4, 'Monkeypox': 5}
+class_mapping = {'Chickenpox': 0, 'Cowpox': 1, 'HFMD': 2, 'Healthy': 3, 'Measles': 4, 'Monkeypox': 5, 'Actinic Keratosis': 6, 'Basal Cell Carcinoma': 7, 'Benign Keratosis Lesion': 8, 'Dermato Fibroma': 9, 'Melanoma': 10, 'Nevus Melanocytic': 11, 'Vascular': 12}
 
 # Image uploader
 uploaded_file = st.file_uploader("Upload foto lesi", type=["jpg", "jpeg", "png"])
@@ -100,14 +100,21 @@ if uploaded_file is not None:
     predicted_class, probabilities = predict_image(model, image_tensor, class_mapping)
 
     # Display the results
-    st.image(uploaded_file, caption="Gambar lesi kulit", use_column_width=True)
-    st.write(f"Predicted class: {predicted_class}")
+    st.image(uploaded_file, caption="Gambar Lesi Kulit", use_column_width=True)
+    st.write(f"Hasil Prediksi: {predicted_class}")
+
+    # Get the top 3 classes and their probabilities
+    top3_prob, top3_idx = torch.topk(probabilities, 3, dim=1)
     
-    # Display probabilities for each class
-    st.write("Probabilities:")
-    for class_name, prob in zip(class_mapping.keys(), probabilities[0]):
-        st.write(f"{class_name}: {prob.item():.4f}")
+    # Sort the top 3 classes by probability
+    top3_classes = [(list(class_mapping.keys())[i], top3_prob[0][idx].item()) 
+                    for idx, i in enumerate(top3_idx[0])]
+    
+    # Display the top 3 classes and their probabilities
+    st.write("Top 3 Prediksi:")
+    for class_name, prob in top3_classes:
+        st.write(f"{class_name}: {prob:.4f}")
 
 else :
-    st.text("Tolong upload file foto sesuai format")
+    st.text("Harap upload file foto sesuai dengan format")
 
