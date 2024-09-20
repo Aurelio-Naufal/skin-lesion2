@@ -73,19 +73,7 @@ def preprocess_image(image_file):
     image_tensor = image_tensor.unsqueeze(0)  # Add batch dimension
 
     return image_tensor
-'''    
-def preprocess_image(uploaded_file):
-    # Read the uploaded image and process it
-    image = Image.open(uploaded_file)
-    preprocess = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225])
-    ])
-    image_tensor = preprocess(image).unsqueeze(0)  # Add batch dimension
-    return image_tensor
-'''
+
 def predict_image(model, image_tensor, class_mapping):
     with torch.no_grad():
         output = model(image_tensor)
