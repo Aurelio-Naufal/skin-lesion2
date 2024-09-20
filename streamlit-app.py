@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import cv2
 from torchvision import transforms
 import numpy as np
+import streamlit as st
 
 class ResNetModel(nn.Module):
     def __init__(self, num_classes, extractor_trainable=True):
