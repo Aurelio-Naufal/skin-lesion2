@@ -115,6 +115,16 @@ if uploaded_file is not None:
     for class_name, prob in top3_classes:
         st.write(f"{class_name}: {prob:.4f}")
 
+    # Display Explanation
+    if predicted_class == "Melanoma":
+        st.write("Lesi pada gambar dipastikan sebagai melanoma karena menunjukkan semua karakteristik klinis yang tidak dapat disangkal, seperti kejelasan asimetri, tepi tidak rata dan kabur, variasi warna mencolok (seperti hitam, coklat, merah, atau putih), serta ukuran di atas 6mm. Model AI telah dilatih menggunakan ribuan kasus melanoma yang terverifikasi oleh ahli medis memiliki kemampuan luar biasa untuk secara konsisten mendeteksi pola-pola ini dengan akurasi yang jauh lebih tinggi daripada visualisasi manusia, menjamin diagnosis yang cepat, tepat, dan akurat. Referensi bacaan melanoma yang mudah didapahami dapat diakses pada link berikut (https://ayosehat.kemkes.go.id/jarang-menyerang-kenali-tanda-kanker-kulit-melanoma)")
+        st.write("**Langkah perlindungan:**")
+        st.markdown("- Baju berlengan panjang dan celana panjang yang terbuat dari kain bertenun rapat atau ber-UPF, Topi bertepi lebar untuk melindungi wajah, leher, dan telinga, Kacamata hitam untuk melindungi mata dan kulit di sekitar mata")
+        st.markdown("- Gunakan tabir surya [(panduan memakai tabir surya)](https://www.aad.org/media/stats-sunscreen)")
+        st.markdown("- Gunakan payung atau tetap berada ditempat teduh")
+        st.write("**Rekomendasi:** segeralah periksakan lesi kulit anda pada dokter untuk mendapatkan penanganan lanjut")
+
+
 else :
     st.text("Harap upload file foto sesuai dengan format")
 
