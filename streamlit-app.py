@@ -35,7 +35,7 @@ class ResNetModel(nn.Module):
 
 def load_model():
     model = ResNetModel(num_classes=13)
-    state_dict = torch.load('resnet2_weights.pth', map_location=torch.device('cpu'))
+    state_dict = torch.load('resnet3_weights.pth', map_location=torch.device('cpu'))
     # Load the state dict into the model
     model.load_state_dict(state_dict) 
     # Move the model to the CPU
